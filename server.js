@@ -4,6 +4,8 @@ const app = exprees();
 
 require("dotenv").config();
 
+const ObjectId = require("mongodb").ObjectId;
+
 app.use(exprees.json());
 
 const cors = require("cors");
@@ -25,11 +27,28 @@ const run = async () => {
 
     const database = client.db("BeautifulPerlour");
     const serviceCollection = database.collection("service");
+    const bookOrderCollection = database.collection("bookorder");
 
+    // Get Service data from server
     app.get("/service", async (req, res) => {
       const findData = serviceCollection.find({});
       const result = await findData.toArray();
-      res.send(result);
+      res.json(result);
+    });
+
+    // Get Service Data One Specific Id
+    app.get("/service/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await serviceCollection.findOne(query);
+      res.json(result);
+    });
+
+    // Post An Order On Database
+    app.post("/order", async (req, res) => {
+      const order = req.body;
+      const result = await bookOrderCollection.insertOne(order);
+      res.json(result);
     });
   } finally {
     // await client.close();
