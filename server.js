@@ -1,5 +1,5 @@
 const exprees = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, OrderedBulkOperation } = require("mongodb");
 const app = exprees();
 
 require("dotenv").config();
@@ -48,6 +48,23 @@ const run = async () => {
     app.post("/order", async (req, res) => {
       const order = req.body;
       const result = await bookOrderCollection.insertOne(order);
+      res.json(result);
+    });
+
+    //Find Order With Specific Email
+    app.get("/order/email", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const data = bookOrderCollection.find(query);
+      const result = await data.toArray();
+      res.json(result);
+    });
+
+    // Delete An Order From Data Base
+    app.delete("/order/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await bookOrderCollection.deleteOne(query);
       res.json(result);
     });
   } finally {
