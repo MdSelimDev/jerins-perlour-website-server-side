@@ -46,8 +46,8 @@ const run = async () => {
 
     // Post An Order On Database
     app.post("/order", async (req, res) => {
-      const order = req.body;
-      const result = await bookOrderCollection.insertOne(order);
+      const orderData = req.body;
+      const result = await bookOrderCollection.insertOne(orderData);
       res.json(result);
     });
 
